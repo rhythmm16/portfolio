@@ -30,8 +30,6 @@ A modern, animated, and interactive personal portfolio website built using **Nex
 - [Nodemailer](https://nodemailer.com/) – for sending emails
 - [MongoDB / PostgreSQL] (if any DB is used)
 
----
 
-## 🚀 Getting Started
 
 
