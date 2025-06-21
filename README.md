@@ -10,7 +10,7 @@ A modern, animated, and interactive personal portfolio website built using **Nex
 - 🎨 **Interactive 3D Animations** – Using Three.js for immersive visuals
 - 💬 **Backend API** – Contact form and other dynamic endpoints using Node.js + Express
 - 💼 **Project Showcase** – Dynamically rendered project data
-- 🌙 **Dark/Light Theme** (optional if implemented)
+- 🌙 **Dark/Light Theme** 
 - 📱 **Fully Responsive** – Works seamlessly across all devices
 
 ---
@@ -22,13 +22,13 @@ A modern, animated, and interactive personal portfolio website built using **Nex
 - [React.js](https://reactjs.org/)
 - [Three.js](https://threejs.org/)
 - [Framer Motion](https://www.framer.com/motion/) (for UI animations)
-- [Tailwind CSS](https://tailwindcss.com/) (or CSS Modules / SCSS if used)
+- [Tailwind CSS](https://tailwindcss.com/) 
 
 ### Backend:
 - [Node.js](https://nodejs.org/)
 - [Express.js](https://expressjs.com/)
 - [Nodemailer](https://nodemailer.com/) – for sending emails
-- [MongoDB / PostgreSQL] (if any DB is used)
+- [MongoDB Atlas]
 
 
 
