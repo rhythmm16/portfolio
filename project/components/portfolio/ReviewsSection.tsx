@@ -5,8 +5,12 @@ import { useInView } from 'framer-motion';
 import { useRef, useState, ChangeEvent, FormEvent, useEffect } from 'react';
 import { Star, Quote, MessageSquare, Send, ChevronLeft, ChevronRight } from 'lucide-react';
 
+// This should work if your backend is configured correctly:
+const API_URL = 'http://localhost:5000/api';
+
 type Review = {
-  id: number;
+  _id?: string;  // MongoDB ID
+  id?: number;   // For compatibility with existing code
   name: string;
   content: string;
   rating: number;
@@ -30,30 +34,71 @@ const ReviewsSection = () => {
   // Auto-rotate timer
   const [autoRotate, setAutoRotate] = useState(true);
 
-  // Initial reviews
-  const [reviews, setReviews] = useState<Review[]>([
-    {
-      id: 1,
-      name: "Alex Chen",
-      content: "Working with Rhythm was an absolute pleasure! Their technical skills, creativity and problem-solving abilities made our project a huge success.",
-      rating: 5,
-      date: "April 15, 2025"
-    },
-    {
-      id: 2,
-      name: "Sarah Johnson",
-      content: "Exceptional work ethic and attention to detail. Delivered complex features ahead of schedule and exceeded all expectations.",
-      rating: 5,
-      date: "May 3, 2025"
-    },
-    {
-      id: 3,
-      name: "Dev Patel",
-      content: "Rhythm's technical expertise and innovative approach brought our vision to life. Highly recommended for any challenging project!",
-      rating: 4,
-      date: "March 28, 2025"
-    }
-  ]);
+  // Initial reviews now come from API
+  const [reviews, setReviews] = useState<Review[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState('');
+
+  // Fetch reviews from API
+  useEffect(() => {
+    const fetchReviews = async () => {
+      try {
+        setIsLoading(true);
+        console.log('Fetching reviews from:', `${API_URL}/reviews`);
+        
+        const response = await fetch(`${API_URL}/reviews`);
+        
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error(`Server responded with ${response.status}: ${errorText}`);
+          throw new Error(`Failed to fetch reviews: ${response.statusText}`);
+        }
+        
+        const data = await response.json();
+        console.log('Reviews fetched successfully:', data);
+        
+        // Add local ID for compatibility with existing code
+        const reviewsWithId = data.map((review: Review, index: number) => ({
+          ...review,
+          id: index + 1
+        }));
+        
+        setReviews(reviewsWithId);
+        setError('');
+      } catch (err) {
+        console.error('Error fetching reviews:', err);
+        setError('Failed to load reviews. Please try again later.');
+        // Load fallback data if API fails
+        setReviews([
+          {
+            id: 1,
+            name: "Alex Chen",
+            content: "Working with Rhythm was an absolute pleasure! Their technical skills, creativity and problem-solving abilities made our project a huge success.",
+            rating: 5,
+            date: "April 15, 2025"
+          },
+          {
+            id: 2,
+            name: "Sarah Johnson",
+            content: "Exceptional work ethic and attention to detail. Delivered complex features ahead of schedule and exceeded all expectations.",
+            rating: 5,
+            date: "May 3, 2025"
+          },
+          {
+            id: 3,
+            name: "Dev Patel",
+            content: "Rhythm's technical expertise and innovative approach brought our vision to life. Highly recommended for any challenging project!",
+            rating: 4,
+            date: "March 28, 2025"
+          }
+        ]);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchReviews();
+  }, []);
 
   // Auto-rotate through reviews every 3 seconds
   useEffect(() => {
@@ -100,30 +145,50 @@ const ReviewsSection = () => {
     });
   };
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  // Updated form submission to use API
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     
-    // Add new review to the list
-    const newReview: Review = {
-      id: reviews.length + 1,
-      ...formData,
-      date: new Date().toLocaleDateString('en-US', { 
-        year: 'numeric', 
-        month: 'long', 
-        day: 'numeric' 
-      })
-    };
+    try {
+      console.log('Submitting review:', formData);
+      const response = await fetch(`${API_URL}/reviews`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error(`Server responded with ${response.status}: ${errorText}`);
+        throw new Error(`Failed to submit review: ${response.statusText}`);
+      }
+
+      const newReview = await response.json();
+      console.log('Review submitted successfully:', newReview);
+      
+      // Add to local state (with id for compatibility)
+      const reviewWithId = {
+        ...newReview,
+        id: reviews.length + 1
+      };
+      
+      setReviews([reviewWithId, ...reviews]);
+      setCurrentIndex(0); // Show the new review
+      setPage([0, 0]); // Reset animation
     
-    setReviews([newReview, ...reviews]);
-    setCurrentIndex(0); // Show the new review
-    setPage([0, 0]); // Reset animation
+      // Reset form
+      setFormData({
+        name: '',
+        content: '',
+        rating: 5
+      });
     
-    // Reset form
-    setFormData({
-      name: '',
-      content: '',
-      rating: 5
-    });
+    } catch (err) {
+      console.error('Error submitting review:', err);
+      alert('Failed to submit review. Please try again.');
+    }
   };
 
   const containerVariants = {
@@ -388,6 +453,20 @@ const ReviewsSection = () => {
             </motion.form>
           </motion.div>
         </div>
+
+        {/* Add loading state */}
+        {isLoading && (
+          <div className="flex justify-center items-center py-10">
+            <div className="w-8 h-8 border-4 border-purple-500 border-t-transparent rounded-full animate-spin"></div>
+          </div>
+        )}
+        
+        {/* Add error message */}
+        {error && (
+          <div className="text-red-500 text-center py-4">
+            {error}
+          </div>
+        )}
       </div>
     </section>
   );

@@ -59,17 +59,18 @@ const AboutSection = () => {
               <p className="text-lg leading-relaxed">
                 Hi! I'm <span className="text-purple-400 font-semibold">Rhythm</span>, a passionate Computer Science engineering student at 
                 <span className="text-cyan-400 font-semibold"> Chitkara University</span> (5th Sem), working at the intersection of 
-                <span className="text-purple-400 font-semibold"> AI, Web, and Smart City</span> innovations.
+                <span className="text-purple-400 font-semibold"> AI, full-stack development, and impactful</span> technology.
               </p>
               <p className="text-lg leading-relaxed">
-                With hands-on experience in full-stack development and AI-powered solutions, 
-                I'm on a journey to build purposeful tech that makes a real impact. From developing 
-                women's health platforms to creating smart travel companions, I love turning 
-                complex problems into elegant solutions.
+                I specialize in building scalable, intelligent applications using React.js, Node.js, Express, MongoDB, and leveraging machine learning to deliver data-driven features and personalized experiences.
+
+From creating a women’s health platform to developing an AI-based travel assistant, I enjoy tackling real-world problems with a user-focused mindset and a strong technical foundation.
+
+I’m also deeply interested in roles that bridge tech with decision-making—such as Data Engineering, Product Analytics, and Business Analysis—where I can use data, logic, and empathy to drive better outcomes.
               </p>
               <p className="text-lg leading-relaxed">
-                Currently contributing to <span className="text-cyan-400 font-semibold">Smart City Research</span> 
-                in collaboration with Taiwan, and serving as a Campus Ambassador for Swiggy Creator Club.
+                Currently, I'm expanding my skillset in areas like <span className="text-cyan-400 font-semibold">data pipelines, cloud infrastructure, and user research,</span> 
+                and actively contributing to projects that blend backend systems with real-world usability.
               </p>
             </div>
           </motion.div>

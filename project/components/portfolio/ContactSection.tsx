@@ -31,8 +31,8 @@ const ContactSection = () => {
     {
       icon: Mail,
       label: "Email",
-      value: "Rhythmjain161203@gmail.com",
-      href: "mailto:Rhythmjain161203@gmail.com",
+      value: "rhythm161203@gmail.com",
+      href: "mailto:rhythm161203@gmail.com",
       color: "from-red-600 to-pink-600"
     },
     {
@@ -53,7 +53,7 @@ const ContactSection = () => {
       icon: Linkedin,
       label: "LinkedIn",
       value: "LinkedIn Profile",
-      href: "https://linkedin.com/in/rhythm-jain",
+      href: "https://www.linkedin.com/in/rhythm-jain-2b4273290",
       color: "from-blue-600 to-cyan-600"
     }
   ];
