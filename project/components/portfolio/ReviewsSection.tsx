@@ -6,7 +6,7 @@ import { useRef, useState, ChangeEvent, FormEvent, useEffect } from 'react';
 import { Star, Quote, MessageSquare, Send, ChevronLeft, ChevronRight } from 'lucide-react';
 
 // This should work if your backend is configured correctly:
-const API_URL = 'http://localhost:5000/api';
+const API_URL =process.env.NEXT_PUBLIC_API || 'https://portfolio-mmcf.onrender.com/';
 
 type Review = {
   _id?: string;  // MongoDB ID

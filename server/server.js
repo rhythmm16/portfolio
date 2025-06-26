@@ -12,7 +12,7 @@ const app = express();
 
 // Middleware
 app.use(cors({
-  origin: '*', // In production, replace with your frontend domain
+  origin:['https://rhythm-jain-portfolio.vercel.app/', 'http://localhost:3000'],
   methods: ['GET', 'POST'],
   credentials: true
 }));
