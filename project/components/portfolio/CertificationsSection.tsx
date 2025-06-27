@@ -133,17 +133,17 @@ const CertificationsSection = () => {
                     animate={isInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.9 }}
                     transition={{ delay: categoryIndex * 0.2 + itemIndex * 0.1 }}
                     whileHover={{ scale: 1.05 }}
-                    className="bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-sm rounded-xl p-6 border border-gray-700/50 hover:border-purple-500/50 transition-all duration-300"
+                    className="bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-sm rounded-xl p-6 border border-gray-700/50 hover:border-purple-500/50 transition-all duration-300 h-[140px] flex flex-col justify-center"
                   >
                     <div className="flex items-start gap-4">
                       <div className={`p-3 rounded-lg bg-gradient-to-r ${item.color} flex-shrink-0`}>
-                        <IconComponent className="w-6 h-6 text-white" />
+                        <IconComponent className="w-5 h-5 text-white" />
                       </div>
-                      <div className="flex-1">
-                        <h4 className="text-lg font-bold text-white mb-2 leading-tight">
+                      <div className="flex-1 overflow-hidden">
+                        <h4 className="text-base font-bold text-white mb-1 leading-tight line-clamp-2">
                           {item.title}
                         </h4>
-                        <p className={`font-medium bg-gradient-to-r ${item.color} bg-clip-text text-transparent`}>
+                        <p className={`text-sm font-medium bg-gradient-to-r ${item.color} bg-clip-text text-transparent`}>
                           {item.issuer}
                         </p>
                       </div>
