@@ -248,7 +248,7 @@ const HeroSection = () => {
             GitHub
           </motion.a>
           <motion.a
-            href="https://linkedin.com/in/rhythm-jain"
+            href="https://www.linkedin.com/in/rhythm-jain-2b4273290"
             target="_blank"
             rel="noopener noreferrer"
             whileHover={{ scale: 1.05 }}
