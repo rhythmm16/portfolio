@@ -2,25 +2,15 @@
 
 import { motion, AnimatePresence } from 'framer-motion';
 import { useInView } from 'framer-motion';
-import { useRef, useState, ChangeEvent, FormEvent, useEffect } from 'react';
-import { Star, Quote, MessageSquare, Send, ChevronLeft, ChevronRight } from 'lucide-react';
-
-// This should work if your backend is configured correctly:
-const API_URL =process.env.NEXT_PUBLIC_API || 'https://portfolio-mmcf.onrender.com/';
+import { useRef, useState, useEffect } from 'react';
+import { Star, Quote, ChevronLeft, ChevronRight } from 'lucide-react';
 
 type Review = {
-  _id?: string;  // MongoDB ID
-  id?: number;   // For compatibility with existing code
+  id: number;
   name: string;
   content: string;
   rating: number;
   date: string;
-};
-
-type FormData = {
-  name: string;
-  content: string;
-  rating: number;
 };
 
 const ReviewsSection = () => {
@@ -34,71 +24,30 @@ const ReviewsSection = () => {
   // Auto-rotate timer
   const [autoRotate, setAutoRotate] = useState(true);
 
-  // Initial reviews now come from API
-  const [reviews, setReviews] = useState<Review[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState('');
-
-  // Fetch reviews from API
-  useEffect(() => {
-    const fetchReviews = async () => {
-      try {
-        setIsLoading(true);
-        console.log('Fetching reviews from:', `${API_URL}/reviews`);
-        
-        const response = await fetch(`${API_URL}/reviews`);
-        
-        if (!response.ok) {
-          const errorText = await response.text();
-          console.error(`Server responded with ${response.status}: ${errorText}`);
-          throw new Error(`Failed to fetch reviews: ${response.statusText}`);
-        }
-        
-        const data = await response.json();
-        console.log('Reviews fetched successfully:', data);
-        
-        // Add local ID for compatibility with existing code
-        const reviewsWithId = data.map((review: Review, index: number) => ({
-          ...review,
-          id: index + 1
-        }));
-        
-        setReviews(reviewsWithId);
-        setError('');
-      } catch (err) {
-        console.error('Error fetching reviews:', err);
-        setError('Failed to load reviews. Please try again later.');
-        // Load fallback data if API fails
-        setReviews([
-          {
-            id: 1,
-            name: "Alex Chen",
-            content: "Working with Rhythm was an absolute pleasure! Their technical skills, creativity and problem-solving abilities made our project a huge success.",
-            rating: 5,
-            date: "April 15, 2025"
-          },
-          {
-            id: 2,
-            name: "Sarah Johnson",
-            content: "Exceptional work ethic and attention to detail. Delivered complex features ahead of schedule and exceeded all expectations.",
-            rating: 5,
-            date: "May 3, 2025"
-          },
-          {
-            id: 3,
-            name: "Dev Patel",
-            content: "Rhythm's technical expertise and innovative approach brought our vision to life. Highly recommended for any challenging project!",
-            rating: 4,
-            date: "March 28, 2025"
-          }
-        ]);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchReviews();
-  }, []);
+  // Hardcoded reviews
+  const [reviews] = useState<Review[]>([
+    {
+      id: 1,
+      name: "Alex Chen",
+      content: "Working with Rhythm was an absolute pleasure! Their technical skills, creativity and problem-solving abilities made our project a huge success.",
+      rating: 5,
+      date: "April 15, 2025"
+    },
+    {
+      id: 2,
+      name: "Sarah Johnson",
+      content: "Exceptional work ethic and attention to detail. Delivered complex features ahead of schedule and exceeded all expectations.",
+      rating: 5,
+      date: "May 3, 2025"
+    },
+    {
+      id: 3,
+      name: "Dev Patel",
+      content: "Rhythm's technical expertise and innovative approach brought our vision to life. Highly recommended for any challenging project!",
+      rating: 4,
+      date: "March 28, 2025"
+    }
+  ]);
 
   // Auto-rotate through reviews every 3 seconds
   useEffect(() => {
@@ -106,17 +55,10 @@ const ReviewsSection = () => {
     
     const interval = setInterval(() => {
       nextReview();
-    }, 3000); // Changed from 5000 to 3000
+    }, 3000);
     
     return () => clearInterval(interval);
   }, [currentIndex, reviews.length, autoRotate]);
-
-  // Form state
-  const [formData, setFormData] = useState<FormData>({
-    name: '',
-    content: '',
-    rating: 5
-  });
 
   // Navigation functions
   const nextReview = () => {
@@ -129,66 +71,43 @@ const ReviewsSection = () => {
     setCurrentIndex((prevIndex) => (prevIndex - 1 + reviews.length) % reviews.length);
   };
 
-  // Form handling
-  const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value
-    });
+  // Render stars for rating
+  const renderStars = (rating: number) => {
+    return Array(5)
+      .fill(0)
+      .map((_, index) => (
+        <Star
+          key={index}
+          size={18}
+          className={`${
+            index < rating
+              ? "text-yellow-400 fill-yellow-400"
+              : "text-gray-500"
+          }`}
+        />
+      ));
   };
 
-  const handleRatingChange = (rating: number) => {
-    setFormData({
-      ...formData,
-      rating
-    });
-  };
-
-  // Updated form submission to use API
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    
-    try {
-      console.log('Submitting review:', formData);
-      const response = await fetch(`${API_URL}/reviews`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error(`Server responded with ${response.status}: ${errorText}`);
-        throw new Error(`Failed to submit review: ${response.statusText}`);
-      }
-
-      const newReview = await response.json();
-      console.log('Review submitted successfully:', newReview);
-      
-      // Add to local state (with id for compatibility)
-      const reviewWithId = {
-        ...newReview,
-        id: reviews.length + 1
-      };
-      
-      setReviews([reviewWithId, ...reviews]);
-      setCurrentIndex(0); // Show the new review
-      setPage([0, 0]); // Reset animation
-    
-      // Reset form
-      setFormData({
-        name: '',
-        content: '',
-        rating: 5
-      });
-    
-    } catch (err) {
-      console.error('Error submitting review:', err);
-      alert('Failed to submit review. Please try again.');
-    }
+  // Pagination indicators
+  const renderPagination = () => {
+    return (
+      <div className="flex justify-center mt-6 gap-2">
+        {reviews.map((_, index) => (
+          <button
+            key={index}
+            onClick={() => {
+              setPage([index > currentIndex ? page + 1 : page - 1, index > currentIndex ? 1 : -1]);
+              setCurrentIndex(index);
+              setAutoRotate(false);
+            }}
+            className={`w-2 h-2 rounded-full transition-all duration-300 ${
+              index === currentIndex ? "bg-purple-500 w-6" : "bg-gray-600"
+            }`}
+            aria-label={`Go to review ${index + 1}`}
+          />
+        ))}
+      </div>
+    );
   };
 
   const containerVariants = {
@@ -229,46 +148,6 @@ const ReviewsSection = () => {
     })
   };
 
-  // Render stars for rating
-  const renderStars = (rating: number, interactive = false) => {
-    return Array(5)
-      .fill(0)
-      .map((_, index) => (
-        <Star
-          key={index}
-          size={interactive ? 24 : 18}
-          className={`${
-            index < rating
-              ? "text-yellow-400 fill-yellow-400"
-              : "text-gray-500"
-          } ${interactive ? "cursor-pointer" : ""}`}
-          onClick={interactive ? () => handleRatingChange(index + 1) : undefined}
-        />
-      ));
-  };
-
-  // Pagination indicators
-  const renderPagination = () => {
-    return (
-      <div className="flex justify-center mt-6 gap-2">
-        {reviews.map((_, index) => (
-          <button
-            key={index}
-            onClick={() => {
-              setPage([index > currentIndex ? page + 1 : page - 1, index > currentIndex ? 1 : -1]);
-              setCurrentIndex(index);
-              setAutoRotate(false);
-            }}
-            className={`w-2 h-2 rounded-full transition-all duration-300 ${
-              index === currentIndex ? "bg-purple-500 w-6" : "bg-gray-600"
-            }`}
-            aria-label={`Go to review ${index + 1}`}
-          />
-        ))}
-      </div>
-    );
-  };
-
   return (
     <section id="reviews" ref={ref} className="py-20 px-4 bg-gradient-to-br from-purple-900/50 via-slate-800/50 to-slate-900/50">
       <div className="max-w-6xl mx-auto">
@@ -292,12 +171,13 @@ const ReviewsSection = () => {
           </motion.p>
         </motion.div>
 
-        <div className="grid lg:grid-cols-2 gap-12">
+        <div className="grid place-items-center">
           {/* Reviews Carousel */}
           <motion.div
             variants={containerVariants}
             initial="hidden"
             animate={isInView ? "visible" : "hidden"}
+            className="max-w-2xl w-full"
           >
             <motion.h3 
               variants={itemVariants}
@@ -380,93 +260,7 @@ const ReviewsSection = () => {
             {/* Pagination dots */}
             {renderPagination()}
           </motion.div>
-
-          {/* Simplified Review Form */}
-          <motion.div
-            variants={containerVariants}
-            initial="hidden"
-            animate={isInView ? "visible" : "hidden"}
-          >
-            <motion.form
-              variants={itemVariants}
-              onSubmit={handleSubmit}
-              className="bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-sm rounded-xl p-8 border border-gray-700/50"
-            >
-              <h3 className="text-2xl font-bold text-white mb-6 flex items-center gap-2">
-                <MessageSquare className="w-6 h-6" />
-                Leave Your Feedback
-              </h3>
-              
-              <div className="space-y-6">
-                <motion.div variants={itemVariants}>
-                  <label htmlFor="name" className="block text-gray-300 font-medium mb-2">
-                    Name
-                  </label>
-                  <input
-                    type="text"
-                    id="name"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleInputChange}
-                    required
-                    className="w-full px-4 py-3 bg-slate-800/50 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:border-purple-500 focus:outline-none transition-colors duration-300"
-                    placeholder="Your name"
-                  />
-                </motion.div>
-
-                <motion.div variants={itemVariants}>
-                  <label className="block text-gray-300 font-medium mb-2">
-                    Rating
-                  </label>
-                  <div className="flex gap-2">
-                    {renderStars(formData.rating, true)}
-                  </div>
-                </motion.div>
-
-                <motion.div variants={itemVariants}>
-                  <label htmlFor="content" className="block text-gray-300 font-medium mb-2">
-                    Review
-                  </label>
-                  <textarea
-                    id="content"
-                    name="content"
-                    value={formData.content}
-                    onChange={handleInputChange}
-                    required
-                    rows={4}
-                    className="w-full px-4 py-3 bg-slate-800/50 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:border-purple-500 focus:outline-none transition-colors duration-300 resize-vertical"
-                    placeholder="Share your experience working with me..."
-                  />
-                </motion.div>
-
-                <motion.button
-                  variants={itemVariants}
-                  type="submit"
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  className="w-full px-8 py-3 bg-gradient-to-r from-purple-600 to-cyan-600 rounded-lg text-white font-semibold hover:shadow-lg transition-all duration-300 flex items-center justify-center gap-2"
-                >
-                  <Send size={20} />
-                  Submit Review
-                </motion.button>
-              </div>
-            </motion.form>
-          </motion.div>
         </div>
-
-        {/* Add loading state */}
-        {isLoading && (
-          <div className="flex justify-center items-center py-10">
-            <div className="w-8 h-8 border-4 border-purple-500 border-t-transparent rounded-full animate-spin"></div>
-          </div>
-        )}
-        
-        {/* Add error message */}
-        {error && (
-          <div className="text-red-500 text-center py-4">
-            {error}
-          </div>
-        )}
       </div>
     </section>
   );
